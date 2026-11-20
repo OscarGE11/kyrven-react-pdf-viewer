@@ -1,0 +1,84 @@
+.krpdf {
+  --krpdf-surface: #fff;
+  --krpdf-border: #a9b7ca;
+  --krpdf-text: #202b42;
+  --krpdf-backdrop: #e4ebf4;
+  border: 1px solid var(--krpdf-border);
+  border-radius: 0.65rem;
+  overflow: hidden;
+  min-width: 0;
+  color: var(--krpdf-text);
+  background: var(--krpdf-surface);
+}
+
+.krpdf-controls,
+.krpdf-controls form,
+.krpdf-controls [role='group'] {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.krpdf-controls {
+  flex-wrap: wrap;
+  padding: 0.55rem 0.7rem;
+  column-gap: 0.85rem;
+}
+.krpdf-controls button,
+.krpdf-controls input {
+  font: inherit;
+  color: inherit;
+  border: 1px solid var(--krpdf-border);
+  border-radius: 0.35rem;
+  background: var(--krpdf-surface);
+  min-height: 2.1rem;
+  padding: 0.2rem 0.4rem;
+}
+.krpdf-controls button {
+  min-width: 2.1rem;
+  cursor: pointer;
+}
+.krpdf-controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.krpdf-controls input {
+  width: 3.4rem;
+}
+.krpdf-message {
+  padding: 0.45rem 0.7rem;
+  margin: 0;
+}
+.krpdf-viewport {
+  position: relative;
+  overflow: auto;
+  height: min(65vh, 46rem);
+  background: var(--krpdf-backdrop);
+}
+.krpdf-strip {
+  position: relative;
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem;
+}
+.krpdf-sheet {
+  position: relative;
+  background: #fff;
+  flex: none;
+  box-shadow: 0 1px 8px #23365435;
+}
+.krpdf-sheet canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.krpdf-settings { margin-inline-start: auto; }
+.krpdf-settings summary { cursor: pointer; padding: .4rem; }
+.krpdf-settings label { display: flex; align-items: center; gap: .5rem; padding: .4rem; }
+.krpdf-settings select { font: inherit; color: inherit; background: var(--krpdf-surface); }

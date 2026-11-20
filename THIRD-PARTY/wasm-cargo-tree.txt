@@ -1,0 +1,151 @@
+hayro-poc-engine v0.1.0 (engine/)
+hayro v0.9.0
+ab_glyph_rasterizer v0.1.10
+bytemuck v1.25.2
+bytemuck_derive v1.12.1 (proc-macro)
+proc-macro2 v1.0.107
+unicode-ident v1.0.27
+quote v1.0.47
+proc-macro2 v1.0.107 (*)
+syn v3.0.10
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+unicode-ident v1.0.27
+fearless_simd v1.2.0
+hayro-interpret v0.9.0
+bitflags v2.13.2
+hayro-cmap v0.1.1
+brotli v8.0.4
+alloc-no-stdlib v2.0.4
+alloc-stdlib v0.2.4
+alloc-no-stdlib v2.0.4
+brotli-decompressor v5.0.3
+alloc-no-stdlib v2.0.4
+alloc-stdlib v0.2.4 (*)
+hayro-postscript v0.2.0
+hayro-font v0.5.0
+bitflags v2.13.2
+hayro-cmap v0.1.1 (*)
+hayro-syntax v0.9.0
+flate2 v1.1.11
+crc32fast v1.5.5
+cfg-if v1.0.5
+miniz_oxide v0.9.1
+adler2 v2.0.1
+simd-adler32 v0.3.10
+zlib-rs v0.6.8
+hayro-ccitt v0.5.0
+hayro-jbig2 v0.4.0
+fearless_simd v1.2.0
+hayro-ccitt v0.5.0
+hayro-jpeg2000 v0.5.0
+fearless_simd v1.2.0
+memchr v2.8.3
+rustc-hash v2.1.3
+smallvec v1.16.6
+zune-jpeg v0.5.15
+zune-core v0.5.3
+kurbo v0.13.1
+arrayvec v0.7.8
+polycool v0.4.0
+arrayvec v0.7.8
+smallvec v1.16.6
+phf v0.13.1
+phf_macros v0.13.1 (proc-macro)
+phf_generator v0.13.1
+fastrand v2.5.0
+phf_shared v0.13.1
+siphasher v1.0.4
+phf_shared v0.13.1 (*)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v2.0.119
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+unicode-ident v1.0.27
+phf_shared v0.13.1
+siphasher v1.0.4
+rustc-hash v2.1.3
+siphasher v1.0.4
+skrifa v0.49.0
+bytemuck v1.25.2 (*)
+once_cell v1.21.4
+read-fonts v0.46.0
+bytemuck v1.25.2 (*)
+foldhash v0.2.0
+font-types v0.12.7
+bytemuck v1.25.2 (*)
+once_cell v1.21.4
+smallvec v1.16.6
+yoke v0.8.4
+stable_deref_trait v1.2.1
+yoke-derive v0.8.4 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.10 (*)
+synstructure v0.14.0
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.10 (*)
+zerofrom v0.1.8
+zerofrom-derive v0.1.8 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.10 (*)
+synstructure v0.14.0 (*)
+smallvec v1.16.6
+yoke v0.8.4 (*)
+hayro-syntax v0.9.0 (*)
+kurbo v0.13.1 (*)
+moxcms v0.8.1
+num-traits v0.2.19
+autocfg v1.5.1
+pxfm v0.1.30
+rustc-hash v2.1.3
+siphasher v1.0.4
+smallvec v1.16.6
+image v0.25.10
+bytemuck v1.25.2 (*)
+byteorder-lite v0.1.0
+moxcms v0.8.1 (*)
+num-traits v0.2.19 (*)
+png v0.18.1
+bitflags v2.13.2
+crc32fast v1.5.5 (*)
+fdeflate v0.3.7
+simd-adler32 v0.3.10
+flate2 v1.1.11 (*)
+miniz_oxide v0.8.9
+adler2 v2.0.1
+simd-adler32 v0.3.10
+kurbo v0.13.1 (*)
+pic-scale v0.7.14
+num-traits v0.2.19 (*)
+pxfm v0.1.30
+rustc-hash v2.1.3
+vello_cpu v0.3.0
+bytemuck v1.25.2 (*)
+hashbrown v0.17.1
+foldhash v0.2.0
+png v0.18.1 (*)
+vello_common v0.3.0
+bytemuck v1.25.2 (*)
+fearless_simd v0.7.0
+guillotiere v0.7.0
+euclid v0.22.14
+num-traits v0.2.19 (*)
+log v0.4.35
+peniko v0.6.1
+bytemuck v1.25.2 (*)
+color v0.3.3
+bytemuck v1.25.2 (*)
+kurbo v0.13.1 (*)
+linebender_resource_handle v0.1.1
+smallvec v1.16.6
+png v0.18.1 (*)
+smallvec v1.16.6
+thiserror v2.0.21
+thiserror-impl v2.0.21 (proc-macro)
+proc-macro2 v1.0.107 (*)
+quote v1.0.47 (*)
+syn v3.0.10 (*)

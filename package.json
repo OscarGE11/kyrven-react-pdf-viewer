@@ -1,0 +1,59 @@
+{
+  "name": "@kyrven/react-pdf-viewer",
+  "version": "0.4.0-beta.1",
+  "description": "React PDF viewer powered by Hayro, a Rust rendering engine compiled to WebAssembly.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist-lib/index.d.ts",
+      "import": "./dist-lib/index.js"
+    },
+    "./static": {
+      "types": "./dist-lib/static.d.ts",
+      "import": "./dist-lib/static.js"
+    },
+    "./pdf.worker.mjs": "./dist-lib/engine/pdf.worker.mjs",
+    "./hayro.wasm": "./dist-lib/engine/hayro.wasm"
+  },
+  "files": [
+    "dist-lib",
+    "THIRD-PARTY",
+    "scripts/hayro-assets.mjs"
+  ],
+  "bin": {
+    "hayro-pdf-assets": "scripts/hayro-assets.mjs"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "scripts": {
+    "build": "tsc && node scripts/styles.mjs",
+    "prepack": "npm run build",
+    "build:engine": "node scripts/build-wasm.mjs"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "beta",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "19.3.1",
+    "typescript": "~5.9.3"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OscarGE11/kyrven-react-pdf-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OscarGE11/kyrven-react-pdf-viewer/issues"
+  },
+  "homepage": "https://github.com/OscarGE11/kyrven-react-pdf-viewer#readme"
+}
