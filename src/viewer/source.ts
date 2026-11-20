@@ -1,5 +1,23 @@
 export type PdfSource = Blob | Uint8Array | string | URL
 
+export function pdfDownloadName(source: PdfSource, preferred?: string) {
+  let name = preferred?.trim()
+  if (!name && source instanceof File) name = source.name
+  if (!name && (typeof source === 'string' || source instanceof URL)) {
+    const url = new URL(source, document.baseURI)
+    if (url.protocol !== 'blob:') {
+      const segment = url.pathname.split('/').pop() ?? ''
+      try {
+        name = decodeURIComponent(segment)
+      } catch {
+        name = segment
+      }
+    }
+  }
+  const safeName = name?.replace(/[<>:"/\\|?*\u0000-\u001f\u007f]/g, '_').trim().replace(/[. ]+$/, '') || 'documento'
+  return /\.pdf$/i.test(safeName) ? safeName : safeName + '.pdf'
+}
+
 export async function readPdf(source: PdfSource, maximum: number, signal: AbortSignal): Promise<Blob> {
   function check(size: number) {
     if (size > maximum) throw new Error('El PDF supera el límite de bytes.')

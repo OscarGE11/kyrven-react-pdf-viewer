@@ -4,10 +4,10 @@ A React component for viewing PDFs in the browser. Hayro parses and rasterizes p
 
 ## Install and render a PDF
 
-In a React application using Vite, install the beta from npm:
+In a React application using Vite, install the viewer from npm:
 
 ```sh
-npm install @kyrven/react-pdf-viewer@beta
+npm install @kyrven/react-pdf-viewer
 ```
 
 Place a PDF at `public/invoice.pdf`, then render the component:
@@ -31,11 +31,14 @@ Vite packages the worker and WASM automatically. Use a modern browser with modul
 | `layout` | Initial reading mode, either `continuous` (default) or `single`. |
 | `initialZoom` | Initial zoom factor, from 0.25 to 3. |
 | `height` | Viewport height as a CSS length or a number of pixels. |
-| `toolbar` | Visible controls. Choose from `page`, `zoom` and `settings`. |
+| `toolbar` | Visible controls. The default includes `page`, `zoom`, `settings` and `download`. |
 | `maxCachedPages` | Maximum number of cached canvases, from 1 to 6. |
 | `maxFileBytes`, `maxPages` | Reduce the default limits of 64 MiB and 2,000 pages per document. |
+| `theme` | Use `light` (default), `dark`, `system` or `custom`. A saved reader preference takes precedence unless the application sets `custom`. |
+| `accentColor` | Initial custom accent in hexadecimal, for example `#7464D8`. Accepts three or six digits. |
+| `downloadName` | Optional filename for the downloaded PDF. Defaults to the source filename or `documento.pdf`. |
 
-Pass these fields in the `options` prop. The component also accepts `onLoad(pageCount)`, `onPageChange(page)` and `onError(error)`. It displays rasterized pages with zoom and navigation. Text selection, search and interactive forms are outside the current feature set.
+Pass these fields in the `options` prop. Readers can change the layout from the Options button and choose light, dark or system appearance when the application allows it. The viewer remembers the preference for the current site in the browser. System appearance follows the browser color scheme and updates when it changes. Set `theme: "custom"` and `accentColor` in code to use your own palette. The download button saves the original PDF bytes. The component also accepts `onLoad(pageCount)`, `onPageChange(page)` and `onError(error)`. It displays rasterized pages with zoom and navigation. Text selection, search and interactive forms are outside the current feature set.
 
 ## Other bundlers
 
@@ -69,17 +72,8 @@ The project is distributed under the [MIT License](LICENSE). Third-party license
 
 ## Publish a release to npm
 
-Run the following commands from a clean, up-to-date main branch after committing and testing your changes. If the Rust engine changed, first rebuild it with `npm run build:engine` and include the updated WASM in your commit.
+Prepare the release from an up-to-date main branch. Choose a patch, minor or major version according to the changes. If the Rust engine changed, rebuild it and include the updated WASM.
 
-```sh
-npm ci
-npm run build
-npm version prerelease --preid=beta
-npm publish --access public --tag beta
-git push origin main --follow-tags
-npm view @kyrven/react-pdf-viewer@beta version
-```
+Install the dependencies, update the version and run `npm pack`. Install the resulting tarball in a separate React application and check the viewer in Vite development and production.
 
-From 0.4.0-beta.1, this creates version 0.4.0-beta.2 and its Git tag. Complete the npm authentication prompt when publishing. The registry can take a few minutes to make the new version available. Verify it in a separate React application with `npm install @kyrven/react-pdf-viewer@beta`.
-
-For the first stable release in this series, use `npm version 0.4.0` and `npm publish --access public --tag latest`, then push the release commit and tag. Choose patch, minor or major for subsequent stable releases according to the changes.
+Commit the version and source changes, then create and push the matching Git tag. Publish the tested tarball with `npm publish <tarball> --access public --tag latest` and confirm the public version with `npm view @kyrven/react-pdf-viewer@latest version`.

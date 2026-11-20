@@ -1,4 +1,4 @@
-import { readPdf, type PdfSource } from './source.js'
+import { pdfDownloadName, readPdf, type PdfSource } from './source.js'
 export type { PdfSource } from './source.js'
 export type EngineAssets = { workerUrl: string; wasmUrl: string }
 
@@ -127,7 +127,21 @@ export async function openPdf(source: PdfSource, assetsUrl: string, signal: Abor
         rendering = false
       }
     }
-    return { pageCount, render, close }
+    function save(name?: string) {
+      if (!file) return
+      const link = document.createElement('a')
+      link.download = pdfDownloadName(source, name)
+      const downloadUrl = URL.createObjectURL(file)
+      link.href = downloadUrl
+      try {
+        document.body.append(link)
+        link.click()
+      } finally {
+        link.remove()
+        setTimeout(() => URL.revokeObjectURL(downloadUrl), 30_000)
+      }
+    }
+    return { pageCount, render, save, close }
   } catch (error) {
     close()
     throw error

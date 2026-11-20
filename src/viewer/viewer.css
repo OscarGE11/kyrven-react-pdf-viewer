@@ -1,59 +1,356 @@
 .krpdf {
-  --krpdf-surface: #fff;
-  --krpdf-border: #a9b7ca;
-  --krpdf-text: #202b42;
-  --krpdf-backdrop: #e4ebf4;
-  border: 1px solid var(--krpdf-border);
-  border-radius: 0.65rem;
-  overflow: hidden;
+  --krpdf-accent: #5262e8;
+  --krpdf-surface: #ffffff;
+  --krpdf-panel: #f7f8fc;
+  --krpdf-control: #ffffff;
+  --krpdf-control-hover: #edf0f8;
+  --krpdf-line: #dce1ed;
+  --krpdf-text: #182238;
+  --krpdf-muted: #4e5b73;
+  --krpdf-backdrop: #e8ecf5;
+  --krpdf-dot: #6479a32d;
+  --krpdf-danger: #a32243;
+  --krpdf-paper-shadow: 0 3px 8px #21345114, 0 14px 35px #21345124;
+  --krpdf-accent-soft: color-mix(in srgb, var(--krpdf-accent) 12%, var(--krpdf-surface));
+  --krpdf-accent-edge: color-mix(in srgb, var(--krpdf-accent) 37%, var(--krpdf-line));
+  --krpdf-accent-text: color-mix(in srgb, var(--krpdf-accent) 48%, var(--krpdf-text));
+  color-scheme: light;
   min-width: 0;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid var(--krpdf-line);
+  border-radius: 1rem;
+  background: var(--krpdf-surface);
   color: var(--krpdf-text);
+  box-shadow: 0 1px 2px #1524400a, 0 12px 36px #15244012;
+  font-family: "Segoe UI Variable Text", "Aptos", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.krpdf[data-theme="dark"] {
+  --krpdf-accent: #a8b2ff;
+  --krpdf-surface: #151a26;
+  --krpdf-panel: #1a2130;
+  --krpdf-control: #222a3b;
+  --krpdf-control-hover: #2b354a;
+  --krpdf-line: #39455c;
+  --krpdf-text: #f2f4fc;
+  --krpdf-muted: #b3bed4;
+  --krpdf-backdrop: #0e1320;
+  --krpdf-dot: #a3b1e125;
+  --krpdf-danger: #ff96ad;
+  --krpdf-paper-shadow: 0 3px 8px #0005, 0 14px 36px #0008;
+  color-scheme: dark;
+}
+
+.krpdf[data-theme="custom"] {
+  --krpdf-panel: color-mix(in srgb, var(--krpdf-accent) 6%, #f9fafc);
+  --krpdf-control-hover: color-mix(in srgb, var(--krpdf-accent) 12%, #f9fafc);
+  --krpdf-line: color-mix(in srgb, var(--krpdf-accent) 18%, #dce1ed);
+  --krpdf-backdrop: color-mix(in srgb, var(--krpdf-accent) 13%, #edf0f6);
+  --krpdf-dot: color-mix(in srgb, var(--krpdf-accent) 24%, transparent);
+}
+
+.krpdf-toolbar {
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid var(--krpdf-line);
+}
+
+.krpdf-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  padding: 0.6875rem 0.875rem;
+}
+
+.krpdf-control-group,
+.krpdf-theme-options {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0.1875rem;
+  border: 1px solid var(--krpdf-line);
+  border-radius: 0.75rem;
+  background: var(--krpdf-panel);
+}
+
+.krpdf-control-group label,
+.krpdf-page-count {
+  color: var(--krpdf-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.krpdf-page-count {
+  white-space: nowrap;
+  padding-inline: 0.15rem;
+}
+
+.krpdf-control-group button,
+.krpdf-control-group input,
+.krpdf-settings-button,
+.krpdf-download-button,
+.krpdf-settings select {
+  box-sizing: border-box;
+  min-height: 2.125rem;
+  color: var(--krpdf-text);
+  font: inherit;
+  border: 1px solid var(--krpdf-line);
+  border-radius: 0.5rem;
+  background: var(--krpdf-control);
+}
+
+.krpdf-control-group button,
+.krpdf-settings-button,
+.krpdf-download-button {
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.krpdf-control-group button {
+  min-width: 2.125rem;
+  padding: 0.25rem;
+  border-color: transparent;
+  background: transparent;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.krpdf-control-group button:enabled:hover {
+  border-color: var(--krpdf-line);
+  background: var(--krpdf-control-hover);
+}
+
+.krpdf-control-group button:disabled,
+.krpdf-control-group input:disabled,
+.krpdf-download-button:disabled {
+  opacity: 0.48;
+  cursor: default;
+}
+
+.krpdf-control-group input {
+  width: 3.5rem;
+  padding: 0.25rem;
+  text-align: center;
+  appearance: textfield;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.krpdf-control-group input::-webkit-inner-spin-button,
+.krpdf-control-group input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.krpdf-chevron {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-right: 1.75px solid currentColor;
+  border-top: 1.75px solid currentColor;
+  transform: translateX(-0.06rem) rotate(45deg);
+}
+
+.krpdf-chevron-prev {
+  transform: translateX(0.06rem) rotate(-135deg);
+}
+
+.krpdf-zoom {
+  min-width: 3.25rem;
+  color: var(--krpdf-text);
+  text-align: center;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.krpdf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-width: 0;
+  margin-inline-start: auto;
+}
+
+.krpdf-settings-button,
+.krpdf-download-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.625rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+}
+
+.krpdf-settings-button {
+  border-color: var(--krpdf-accent-edge);
+  background: var(--krpdf-accent-soft);
+  color: var(--krpdf-accent-text);
+}
+
+.krpdf-settings-button:hover,
+.krpdf-settings-button[aria-expanded="true"] {
+  border-color: var(--krpdf-accent-text);
+  background: color-mix(in srgb, var(--krpdf-accent) 19%, var(--krpdf-surface));
+}
+
+.krpdf-download-button:enabled:hover {
+  border-color: var(--krpdf-accent-edge);
+  background: var(--krpdf-control-hover);
+}
+
+.krpdf-download-icon {
+  position: relative;
+  width: 0.875rem;
+  height: 0.75rem;
+  border-bottom: 1.5px solid currentColor;
+}
+
+.krpdf-download-icon::before,
+.krpdf-download-icon::after {
+  position: absolute;
+  left: 50%;
+  content: "";
+}
+
+.krpdf-download-icon::before {
+  top: -0.1rem;
+  height: 0.56rem;
+  border-left: 1.5px solid currentColor;
+  transform: translateX(-50%);
+}
+
+.krpdf-download-icon::after {
+  top: 0.12rem;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.krpdf-gear {
+  font-family: "Segoe UI Symbol", system-ui, sans-serif;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.krpdf-settings:not([hidden]) {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  padding: 0.75rem 0.875rem 0.875rem;
+  border-top: 1px solid var(--krpdf-line);
+  background: var(--krpdf-panel);
+}
+
+.krpdf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--krpdf-muted);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.krpdf-field legend {
+  margin-bottom: 0.375rem;
+  padding: 0;
+}
+
+.krpdf-settings select {
+  min-height: 2.375rem;
+  padding: 0.375rem 0.625rem;
+  cursor: pointer;
+}
+
+.krpdf-theme-options {
+  width: fit-content;
+  flex-wrap: wrap;
+  gap: 0.125rem;
+  padding: 0.125rem;
+  border-radius: 0.625rem;
   background: var(--krpdf-surface);
 }
 
-.krpdf-controls,
-.krpdf-controls form,
-.krpdf-controls [role='group'] {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-.krpdf-controls {
-  flex-wrap: wrap;
-  padding: 0.55rem 0.7rem;
-  column-gap: 0.85rem;
-}
-.krpdf-controls button,
-.krpdf-controls input {
-  font: inherit;
-  color: inherit;
-  border: 1px solid var(--krpdf-border);
-  border-radius: 0.35rem;
-  background: var(--krpdf-surface);
-  min-height: 2.1rem;
-  padding: 0.2rem 0.4rem;
-}
-.krpdf-controls button {
-  min-width: 2.1rem;
+.krpdf-theme-options label {
+  position: relative;
   cursor: pointer;
 }
-.krpdf-controls button:disabled {
-  opacity: 0.5;
-  cursor: default;
+
+.krpdf-theme-options input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
 }
-.krpdf-controls input {
-  width: 3.4rem;
+
+.krpdf-theme-options span {
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
+  padding-inline: 0.6rem;
+  border-radius: 0.4375rem;
+  white-space: nowrap;
 }
+
+.krpdf-theme-options label:hover span {
+  background: var(--krpdf-control-hover);
+}
+
+.krpdf-theme-options input:checked + span {
+  color: var(--krpdf-accent-text);
+  background: var(--krpdf-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--krpdf-accent-edge);
+}
+
+.krpdf :is(button, input, select, .krpdf-viewport):focus-visible,
+.krpdf-theme-options input:focus-visible + span {
+  outline: 2px solid var(--krpdf-accent-text);
+  outline-offset: 2px;
+}
+
+.krpdf-theme-options input:focus-visible {
+  outline: none;
+}
+
 .krpdf-message {
-  padding: 0.45rem 0.7rem;
   margin: 0;
+  padding: 0.75rem 0.875rem;
+  background: var(--krpdf-panel);
+  color: var(--krpdf-muted);
 }
+
+.krpdf-message[role="alert"] {
+  color: var(--krpdf-danger);
+}
+
 .krpdf-viewport {
   position: relative;
   overflow: auto;
   height: min(65vh, 46rem);
-  background: var(--krpdf-backdrop);
+  scrollbar-color: var(--krpdf-muted) var(--krpdf-backdrop);
+  background: radial-gradient(circle, var(--krpdf-dot) 1px, transparent 1.1px) 0 0 / 18px 18px,
+    var(--krpdf-backdrop);
 }
+
+.krpdf .krpdf-viewport:focus-visible {
+  outline-offset: -2px;
+}
+
 .krpdf-strip {
   position: relative;
   box-sizing: border-box;
@@ -62,15 +359,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.8rem;
-  padding: 0.8rem;
+  gap: 1rem;
+  padding: clamp(0.75rem, 2vw, 1.5rem);
 }
+
 .krpdf-sheet {
   position: relative;
-  background: #fff;
   flex: none;
-  box-shadow: 0 1px 8px #23365435;
+  background: #fff;
+  box-shadow: var(--krpdf-paper-shadow);
 }
+
 .krpdf-sheet canvas {
   position: absolute;
   inset: 0;
@@ -78,7 +377,17 @@
   width: 100%;
   height: 100%;
 }
-.krpdf-settings { margin-inline-start: auto; }
-.krpdf-settings summary { cursor: pointer; padding: .4rem; }
-.krpdf-settings label { display: flex; align-items: center; gap: .5rem; padding: .4rem; }
-.krpdf-settings select { font: inherit; color: inherit; background: var(--krpdf-surface); }
+
+@media (prefers-reduced-motion: reduce) {
+  .krpdf-control-group button,
+  .krpdf-settings-button,
+  .krpdf-download-button {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .krpdf-theme-options input:checked + span {
+    border: 1px solid Highlight;
+  }
+}
