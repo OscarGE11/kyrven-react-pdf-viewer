@@ -1,34 +1,78 @@
-import type { openPdf } from './document.js'
+import type { PageSize, ViewerDocument } from './document.js'
 
-type OpenPdf = Awaited<ReturnType<typeof openPdf>>
-type Size = { width: number; height: number }
+export type ViewerZoom = number | 'fit-width' | 'fit-page'
+export type ViewerRotation = 0 | 90 | 180 | 270
+type PageLabels = { page: (number: number) => string; image: string }
 type Sheet = { element: HTMLDivElement; canvas?: HTMLCanvasElement; failed?: boolean }
 
 export function mountPages(
   viewport: HTMLDivElement,
-  { render, pageCount }: OpenPdf,
+  { render, pageCount, firstPageSize, kind }: ViewerDocument,
   continuous: boolean,
   cacheLimit: number,
-  initialZoom: number,
+  initialZoom: ViewerZoom,
+  initialRotation: ViewerRotation,
+  pageLabels: PageLabels,
   onPage: (page: number) => void,
+  onZoom: (zoom: number) => void,
   onError: (error: Error) => void,
 ) {
   const strip = document.createElement('div')
   strip.className = 'krpdf-strip'
   viewport.append(strip)
-  const sizes = new Map<number, Size>()
+  const sizes = new Map<number, PageSize>()
+  if (firstPageSize) sizes.set(1, firstPageSize)
   const cache = new Set<Sheet>()
   let sheets: Sheet[] = []
   let page = 1
   let zoom = initialZoom
+  let rotation = initialRotation
+  let availableWidth = 0
+  let availableHeight = 0
   let frame = 0
   let disposed = false
   let running: { number: number; abort: AbortController } | undefined
 
+  function getSize(number: number) {
+    return sizes.get(number) ?? sizes.get(1) ?? { width: 612, height: 792 }
+  }
+
+  function readViewport() {
+    const style = getComputedStyle(strip)
+    const width = Math.max(1, viewport.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight))
+    const height = Math.max(1, viewport.clientHeight - 2 * parseFloat(style.paddingTop))
+    const changed = width !== availableWidth || height !== availableHeight
+    availableWidth = width
+    availableHeight = height
+    return changed
+  }
+
+  function pageZoom(size: PageSize) {
+    if (typeof zoom === 'number') return zoom
+    const sideways = rotation % 180 !== 0
+    const width = availableWidth / (sideways ? size.height : size.width)
+    const height = availableHeight / (sideways ? size.width : size.height)
+    return zoom === 'fit-page' ? Math.min(width, height) : width
+  }
+
+  function labelCanvas(canvas: HTMLCanvasElement, number: number) {
+    canvas.setAttribute('role', 'img')
+    canvas.setAttribute('aria-label', kind === 'image' ? pageLabels.image : pageLabels.page(number))
+  }
+
   function sizeSheet(sheet: Sheet, number: number) {
-    const { width, height } = sizes.get(number) ?? { width: 612, height: 792 }
-    sheet.element.style.width = `${width * zoom}px`
-    sheet.element.style.height = `${height * zoom}px`
+    const size = getSize(number)
+    const scale = pageZoom(size)
+    const width = size.width * scale
+    const height = size.height * scale
+    const sideways = rotation % 180 !== 0
+    sheet.element.style.width = `${sideways ? height : width}px`
+    sheet.element.style.height = `${sideways ? width : height}px`
+    if (sheet.canvas) {
+      sheet.canvas.style.width = `${width}px`
+      sheet.canvas.style.height = `${height}px`
+      sheet.canvas.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`
+    }
   }
 
   function release(sheet: Sheet) {
@@ -56,6 +100,7 @@ export function mountPages(
 
   function rebuild() {
     running?.abort.abort()
+    readViewport()
     for (const sheet of cache) release(sheet)
     const fragment = document.createDocumentFragment()
     sheets = Array.from({ length: continuous ? pageCount : 1 }, (_, index) => {
@@ -71,6 +116,7 @@ export function mountPages(
     strip.replaceChildren(fragment)
     sizeBottomPadding()
     viewport.scrollTop = continuous && page > 1 ? sheets[page - 1].element.offsetTop : 0
+    onZoom(pageZoom(getSize(page)))
     schedule()
   }
 
@@ -116,6 +162,7 @@ export function mountPages(
   function renderVisible() {
     frame = 0
     const wanted = wantedPages()
+    onZoom(pageZoom(getSize(page)))
     const getSheet = (number: number) => sheets[continuous ? number - 1 : 0]
     const kept = new Set(wanted.map(getSheet))
     for (const sheet of cache) if (!kept.has(sheet)) release(sheet)
@@ -128,24 +175,37 @@ export function mountPages(
     const sheet = getSheet(number)
     const abort = new AbortController()
     running = { number, abort }
-    void render(number, zoom, abort.signal)
+    const scale = pageZoom(getSize(number))
+    void render(number, scale, abort.signal)
       .then((result) => {
         if (abort.signal.aborted) {
           result.canvas.width = result.canvas.height = 0
           return
         }
+        const newFirstSize = number === 1 && !sizes.has(1)
+        const active = getSheet(page)
+        const oldTop = active.element.offsetTop
         sizes.set(number, { width: result.width, height: result.height })
-        sizeSheet(sheet, number)
-        if (number === pageCount) sizeBottomPadding()
-        sheet.canvas = result.canvas
-        sheet.element.append(result.canvas)
-        cache.add(sheet)
+        if (Math.abs(pageZoom(getSize(number)) / scale - 1) > 0.05) {
+          result.canvas.width = result.canvas.height = 0
+        } else {
+          labelCanvas(result.canvas, number)
+          sheet.canvas = result.canvas
+          sheet.element.append(result.canvas)
+          cache.add(sheet)
+        }
+        if (newFirstSize) sheets.forEach((item, index) => sizeSheet(item, continuous ? index + 1 : page))
+        else sizeSheet(sheet, number)
+        if (continuous) {
+          sizeBottomPadding()
+          viewport.scrollTop += active.element.offsetTop - oldTop
+        }
       })
       .catch((reason: unknown) => {
         if (abort.signal.aborted) return
         sheet.failed = true
         const error = reason instanceof Error ? reason.message : String(reason)
-        onError(new Error(`Página ${number} · ${error}`))
+        onError(new Error(`${kind === 'image' ? pageLabels.image : pageLabels.page(number)} · ${error}`))
       })
       .finally(() => {
         running = undefined
@@ -155,6 +215,10 @@ export function mountPages(
 
   rebuild()
   const resize = new ResizeObserver(() => {
+    if (readViewport() && typeof zoom !== 'number') {
+      rebuild()
+      return
+    }
     sizeBottomPadding()
     schedule()
   })
@@ -170,10 +234,25 @@ export function mountPages(
         rebuild()
       }
     },
-    setZoom(value: number) {
-      if (value === zoom) return
+    setView(value: ViewerZoom, angle: ViewerRotation) {
+      if (value === zoom && angle === rotation) return
+      if (typeof zoom === 'number' && zoom === value) {
+        rotation = angle
+        sheets.forEach((sheet, index) => sizeSheet(sheet, continuous ? index + 1 : page))
+        sizeBottomPadding()
+        viewport.scrollTop = continuous && page > 1 ? sheets[page - 1].element.offsetTop : 0
+        schedule()
+        return
+      }
       zoom = value
+      rotation = angle
       rebuild()
+    },
+    setLabels(labels: PageLabels) {
+      pageLabels = labels
+      for (const sheet of cache) {
+        if (sheet.canvas) labelCanvas(sheet.canvas, Number(sheet.element.dataset.page))
+      }
     },
     destroy() {
       disposed = true

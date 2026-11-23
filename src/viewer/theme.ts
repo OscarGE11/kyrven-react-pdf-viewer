@@ -51,10 +51,10 @@ const getSystemDark = () => window.matchMedia(systemDarkQuery).matches
 const noPreference = () => null
 const defaultSystemDark = () => false
 
-export function useViewerTheme(initialTheme: PdfViewerTheme) {
+export function useViewerTheme(initialTheme: PdfViewerTheme, remember: boolean) {
   const preference = useSyncExternalStore(subscribePreference, readPreference, noPreference)
   const systemDark = useSyncExternalStore(subscribeSystemTheme, getSystemDark, defaultSystemDark)
-  const selectedTheme = initialTheme === 'custom' ? 'custom' : preference ?? initialTheme
+  const selectedTheme = !remember || initialTheme === 'custom' ? initialTheme : preference ?? initialTheme
   const systemTheme = systemDark ? 'dark' : 'light'
   const theme = selectedTheme === 'system' ? systemTheme : selectedTheme
   return { selectedTheme, theme }

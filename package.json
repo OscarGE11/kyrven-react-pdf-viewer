@@ -1,6 +1,6 @@
 {
   "name": "@kyrven/react-pdf-viewer",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "React PDF viewer powered by Hayro, a Rust rendering engine compiled to WebAssembly.",
   "type": "module",
   "engines": {

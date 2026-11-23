@@ -128,6 +128,21 @@
   background: var(--krpdf-control-hover);
 }
 
+.krpdf-fit {
+  flex-wrap: wrap;
+}
+
+.krpdf-fit button {
+  padding-inline: 0.45rem;
+  font-size: 0.8125rem;
+}
+
+.krpdf-fit button[aria-pressed="true"] {
+  border-color: var(--krpdf-accent-edge);
+  background: var(--krpdf-accent-soft);
+  color: var(--krpdf-accent-text);
+}
+
 .krpdf-control-group button:disabled,
 .krpdf-control-group input:disabled,
 .krpdf-download-button:disabled {
@@ -341,6 +356,7 @@
 .krpdf-viewport {
   position: relative;
   overflow: auto;
+  scrollbar-gutter: stable;
   height: min(65vh, 46rem);
   scrollbar-color: var(--krpdf-muted) var(--krpdf-backdrop);
   background: radial-gradient(circle, var(--krpdf-dot) 1px, transparent 1.1px) 0 0 / 18px 18px,
@@ -366,16 +382,16 @@
 .krpdf-sheet {
   position: relative;
   flex: none;
+  overflow: clip;
   background: #fff;
   box-shadow: var(--krpdf-paper-shadow);
 }
 
 .krpdf-sheet canvas {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
   display: block;
-  width: 100%;
-  height: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {

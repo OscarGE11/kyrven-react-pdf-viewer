@@ -1,0 +1,36 @@
+const identityError = (error: Error) => error.message
+
+export const defaultLabels = {
+  viewer: 'Visor PDF',
+  viewport: 'Páginas del PDF',
+  documentViewer: 'Visor de documentos',
+  documentViewport: 'Contenido del documento',
+  page: 'Página',
+  previousPage: 'Página anterior',
+  nextPage: 'Página siguiente',
+  pageImage: (number: number) => `Página ${number}`,
+  image: 'Imagen',
+  zoom: 'Zoom',
+  zoomOut: 'Reducir zoom',
+  zoomIn: 'Aumentar zoom',
+  fitWidth: 'Ajustar al ancho',
+  fitPage: 'Ajustar a la página',
+  rotate: 'Rotación',
+  rotateLeft: 'Girar a la izquierda',
+  rotateRight: 'Girar a la derecha',
+  downloadPdf: 'Descargar PDF',
+  downloadImage: 'Descargar imagen',
+  openingPdf: 'Abriendo PDF…',
+  openingDocument: 'Abriendo documento…',
+  settings: 'Opciones',
+  layout: 'Vista',
+  continuous: 'Scroll continuo',
+  single: 'Una página',
+  appearance: 'Apariencia',
+  light: 'Claro',
+  dark: 'Oscuro',
+  system: 'Sistema',
+  error: identityError,
+}
+
+export type ViewerLabels = Partial<typeof defaultLabels>

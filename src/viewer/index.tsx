@@ -1,5 +1,5 @@
 'use client'
-import { PdfViewer as Viewer, type PdfViewerProps } from './PdfViewer.js'
+import { Viewer, type PdfViewerProps, type DocumentViewerProps } from './PdfViewer.js'
 import type { EngineAssets } from './document.js'
 
 const engine: EngineAssets = {
@@ -9,6 +9,11 @@ const engine: EngineAssets = {
 export function PdfViewer(props: PdfViewerProps) {
   return <Viewer {...props} engine={engine} />
 }
-export type { PdfViewerProps, PdfViewerOptions, PdfViewerTheme } from './PdfViewer.js'
+export function DocumentViewer(props: DocumentViewerProps) {
+  return <Viewer {...props} engine={engine} acceptImages />
+}
+export type { DocumentViewerProps, DocumentViewerOptions, PdfViewerProps, PdfViewerOptions, PdfViewerTheme } from './PdfViewer.js'
+export type { ViewerLabels } from './labels.js'
+export type { ViewerRotation, ViewerZoom } from './pages.js'
 export type { PdfSource } from './source.js'
 

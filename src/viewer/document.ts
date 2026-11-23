@@ -1,6 +1,15 @@
-import { pdfDownloadName, readPdf, type PdfSource } from './source.js'
+import { downloadName, readFile, saveFile, type PdfSource } from './source.js'
 export type { PdfSource } from './source.js'
 export type EngineAssets = { createWorker: () => Worker; getWasmUrl: () => string }
+export type PageSize = { width: number; height: number }
+export type ViewerDocument = {
+  kind: 'pdf' | 'image'
+  pageCount: number
+  firstPageSize?: PageSize
+  render: (number: number, zoom: number, signal: AbortSignal) => Promise<PageSize & { canvas: HTMLCanvasElement }>
+  save: (name?: string) => void
+  close: () => void
+}
 
 const MiB = 1024 * 1024
 const deadline = 30_000
@@ -15,6 +24,10 @@ function bounded(value: number | undefined, maximum: number) {
   if (value === undefined) return maximum
   if (!Number.isSafeInteger(value) || value < 1) throw new Error('El límite debe ser un entero positivo.')
   return Math.min(value, maximum)
+}
+
+export function fileLimit(maxFileBytes?: number) {
+  return bounded(maxFileBytes, 64 * MiB)
 }
 
 function sameOriginAsset(url: URL) {
@@ -34,12 +47,13 @@ function staticEngine(assetsUrl: string): EngineAssets {
 }
 
 export async function openPdf(source: PdfSource, assetsUrl: string, signal: AbortSignal,
-  maxFileBytes?: number, maxPages?: number, engine?: EngineAssets) {
+  maxFileBytes?: number, maxPages?: number, engine?: EngineAssets, contents?: Blob,
+): Promise<ViewerDocument> {
   signal.throwIfAborted()
   const limit = bounded(maxPages, 2000)
   const assets = engine ?? staticEngine(assetsUrl)
   const wasm = sameOriginAsset(new URL(assets.getWasmUrl(), document.baseURI))
-  let file: Blob | undefined = await readPdf(source, bounded(maxFileBytes, 64 * MiB), signal)
+  let file: Blob | undefined = contents ?? await readFile(source, fileLimit(maxFileBytes), signal)
   signal.throwIfAborted()
   let worker: Worker | undefined
   let pending: ((error: unknown) => void) | undefined
@@ -125,8 +139,6 @@ export async function openPdf(source: PdfSource, assetsUrl: string, signal: Abor
         const context = canvas.getContext('2d')
         if (!context) throw new Error('Canvas 2D no disponible.')
         context.putImageData(new ImageData(result.pixels, canvas.width, canvas.height), 0, 0)
-        canvas.setAttribute('role', 'img')
-        canvas.setAttribute('aria-label', `Página ${number}`)
         const drawn = performance.now()
         performance.measure('hayro:render', { start, end: drawn, detail: {
           ...result.metrics, drawMs: drawn - drawStart,
@@ -138,20 +150,9 @@ export async function openPdf(source: PdfSource, assetsUrl: string, signal: Abor
       }
     }
     function save(name?: string) {
-      if (!file) return
-      const link = document.createElement('a')
-      link.download = pdfDownloadName(source, name)
-      const downloadUrl = URL.createObjectURL(file)
-      link.href = downloadUrl
-      try {
-        document.body.append(link)
-        link.click()
-      } finally {
-        link.remove()
-        setTimeout(() => URL.revokeObjectURL(downloadUrl), 30_000)
-      }
+      if (file) saveFile(file, downloadName(source, 'pdf', name))
     }
-    return { pageCount, render, save, close }
+    return { kind: 'pdf', pageCount, render, save, close }
   } catch (error) {
     close()
     throw error
