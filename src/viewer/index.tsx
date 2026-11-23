@@ -1,10 +1,11 @@
 'use client'
 import { PdfViewer as Viewer, type PdfViewerProps } from './PdfViewer.js'
-// The private alias lets Vite externalize the worker during dependency optimization.
-import workerUrl from '#hayro-worker.txt?url&no-inline'
-import wasmUrl from './engine/hayro.wasm?url&no-inline'
+import type { EngineAssets } from './document.js'
 
-const engine = { workerUrl, wasmUrl }
+const engine: EngineAssets = {
+  createWorker: () => new Worker(new URL('./engine/pdf.worker.mjs', import.meta.url), { type: 'module' }),
+  getWasmUrl: () => new URL('./engine/hayro.wasm', import.meta.url).href,
+}
 export function PdfViewer(props: PdfViewerProps) {
   return <Viewer {...props} engine={engine} />
 }

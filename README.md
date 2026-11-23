@@ -4,7 +4,7 @@ A React component for viewing PDFs in the browser. Hayro parses and rasterizes p
 
 ## Install and render a PDF
 
-In a React application using Vite, install the viewer from npm:
+Install the viewer in your React or Next.js application:
 
 ```sh
 npm install @kyrven/react-pdf-viewer
@@ -20,7 +20,18 @@ export default function Invoice() {
 }
 ```
 
-Vite packages the worker and WASM automatically. Use a modern browser with module workers, WebAssembly SIMD and Canvas 2D. Serve the worker and WASM from the application origin and configure the server to serve WASM as `application/wasm`.
+The main entry point uses static `new URL(..., import.meta.url)` references so Next.js and compatible bundlers can emit the worker and WASM automatically. Use a browser with module workers, WebAssembly SIMD and Canvas 2D. The WASM must be served from the application origin with the `application/wasm` content type.
+
+For Vite 7 development, exclude the viewer from dependency pre-bundling so Vite resolves the URLs relative to the installed package:
+
+```js
+export default {
+  optimizeDeps: {
+    exclude: ['@kyrven/react-pdf-viewer'],
+    include: ['react/jsx-runtime'],
+  },
+}
+```
 
 ## Component API
 
@@ -40,9 +51,9 @@ Vite packages the worker and WASM automatically. Use a modern browser with modul
 
 Pass these fields in the `options` prop. Readers can change the layout from the Options button and choose light, dark or system appearance when the application allows it. The viewer remembers the preference for the current site in the browser. System appearance follows the browser color scheme and updates when it changes. Set `theme: "custom"` and `accentColor` in code to use your own palette. The download button saves the original PDF bytes. The component also accepts `onLoad(pageCount)`, `onPageChange(page)` and `onError(error)`. It displays rasterized pages with zoom and navigation. Text selection, search and interactive forms are outside the current feature set.
 
-## Other bundlers
+## Self-hosted engine assets
 
-Import the component from `@kyrven/react-pdf-viewer/static` and run `npx hayro-pdf-assets public/hayro` during deployment. To use a different public directory, pass the target path to the command and its URL to the component as `assetsUrl`.
+If you manage static assets yourself, import the component from `@kyrven/react-pdf-viewer/static` and run `npx hayro-pdf-assets public/hayro` during deployment. To use a different public directory, pass the target path to the command and its URL to the component as `assetsUrl`.
 
 ## Develop and package
 

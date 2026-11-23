@@ -1,6 +1,6 @@
 import { pdfDownloadName, readPdf, type PdfSource } from './source.js'
 export type { PdfSource } from './source.js'
-export type EngineAssets = { workerUrl: string; wasmUrl: string }
+export type EngineAssets = { createWorker: () => Worker; getWasmUrl: () => string }
 
 const MiB = 1024 * 1024
 const deadline = 30_000
@@ -17,18 +17,28 @@ function bounded(value: number | undefined, maximum: number) {
   return Math.min(value, maximum)
 }
 
+function sameOriginAsset(url: URL) {
+  if (url.origin !== location.origin || !['https:', 'http:'].includes(url.protocol)) {
+    throw new Error('Los recursos del motor deben servirse desde el mismo origen.')
+  }
+  return url
+}
+
+function staticEngine(assetsUrl: string): EngineAssets {
+  const base = new URL(assetsUrl.replace(/\/?$/, '/'), document.baseURI)
+  const workerUrl = sameOriginAsset(new URL('pdf.worker.mjs', base))
+  return {
+    createWorker: () => new Worker(workerUrl, { type: 'module' }),
+    getWasmUrl: () => new URL('hayro.wasm', base).href,
+  }
+}
+
 export async function openPdf(source: PdfSource, assetsUrl: string, signal: AbortSignal,
   maxFileBytes?: number, maxPages?: number, engine?: EngineAssets) {
   signal.throwIfAborted()
   const limit = bounded(maxPages, 2000)
-  const base = new URL(assetsUrl.replace(/\/?$/, '/'), document.baseURI)
-  const url = engine ? new URL(engine.workerUrl, document.baseURI) : new URL('pdf.worker.mjs', base)
-  const wasm = engine ? new URL(engine.wasmUrl, document.baseURI) : new URL('hayro.wasm', base)
-  for (const asset of [url, wasm]) {
-    if (asset.origin !== location.origin || !['https:', 'http:'].includes(asset.protocol)) {
-      throw new Error('Los recursos del motor deben servirse desde el mismo origen.')
-    }
-  }
+  const assets = engine ?? staticEngine(assetsUrl)
+  const wasm = sameOriginAsset(new URL(assets.getWasmUrl(), document.baseURI))
   let file: Blob | undefined = await readPdf(source, bounded(maxFileBytes, 64 * MiB), signal)
   signal.throwIfAborted()
   let worker: Worker | undefined
@@ -53,7 +63,7 @@ export async function openPdf(source: PdfSource, assetsUrl: string, signal: Abor
     if (closed) throw new DOMException('Documento cerrado.', 'AbortError')
     abort?.throwIfAborted()
     if (pending) throw new Error('Hay una operación PDF en curso.')
-    const port = worker ??= new Worker(url, { type: 'module' })
+    const port = worker ??= assets.createWorker()
     return new Promise((resolve, reject) => {
       const interrupted = () => stop(abort?.reason)
       const timer = setTimeout(() => stop(new Error('El motor PDF superó los 30 segundos.')),
