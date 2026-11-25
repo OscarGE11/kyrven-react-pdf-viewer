@@ -1,5 +1,7 @@
 # Kyrven React PDF Viewer
 
+[Website & live demo](https://kyrven-pdf.pages.dev) · [Documentation](https://kyrven-pdf.pages.dev/docs/)
+
 A React component for viewing PDFs in the browser. Hayro parses and rasterizes pages in a web worker using a precompiled Rust/WebAssembly engine. Local documents are processed in the browser.
 
 ## Install and render a PDF
