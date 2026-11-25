@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Logo from '../components/Logo.astro';
+import Install from '../components/Install.astro';
+import Playground from '../components/Playground';
+import { ArrowUpRight, Braces, Cpu, LockKeyhole, Layers3 } from 'lucide-react';
+---
+<Layout>
+  <section class="hero section-shell">
+    <div class="hero-copy"><a class="release-link" href="/docs/">Meet Kyrven PDF <span>React + Rust + WebAssembly</span><ArrowUpRight size={15}/></a>
+      <h1>PDFs, at home<br />in React.</h1>
+      <p class="hero-description">A capable PDF reader. A single React component.<br class="desktop-break" /> Rust under the hood, your interface on top.</p>
+      <Install />
+      <div class="hero-actions"><a class="button" href="#playground">Try the viewer <ArrowUpRight size={18}/></a><a class="text-link" href="/docs/">Read the docs <ArrowUpRight size={17}/></a></div>
+      <p class="hero-note">Open source. MIT licensed. Yours to build with.</p>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="paper paper-back"></div><div class="paper paper-middle"></div><div class="paper paper-front"><div class="paper-heading"><span>kyrven</span><span>PDF</span></div><div class="paper-glyph"><Logo /></div><div class="paper-lines"><i></i><i></i><i></i></div><div class="paper-bottom"><span>Made to be read.</span><span>↗</span></div></div><div class="engine-tag"><Cpu size={17}/> Powered by Rust & WASM</div></div>
+  </section>
+  <div class="capability-strip section-shell"><span><Braces size={18}/> React native API</span><span><Cpu size={18}/> Rust rendering engine</span><span><LockKeyhole size={18}/> Browser-local processing</span><span><Layers3 size={18}/> PDF & image support</span></div>
+  <section id="playground" class="demo-section section-shell"><div class="section-heading"><div><h2>Less imagining.<br />More trying.</h2><p>A real viewer, right here. Bring a PDF or explore ours.</p></div><a class="text-link" href="/docs/#quick-start">Build this into your app <ArrowUpRight size={17}/></a></div><Playground client:only="react"><div slot="fallback" class="loading-demo">Loading the interactive reader…</div></Playground></section>
+  <section class="details-section section-shell"><div class="details-intro"><h2>Your documents.<br />Your experience.</h2><p>The reader handles the essentials.<br />You make it feel like your product.</p></div><div class="feature-list"><article><Cpu size={23}/><div><h3>A Rust engine, in the browser.</h3><p>Hayro parses and renders PDF pages with WebAssembly in a web worker, keeping document work off your main thread.</p></div></article><article><LockKeyhole size={23}/><div><h3>Local files stay local.</h3><p>Open a File, Blob, URL or byte array. Documents selected in this demo are processed in your browser, without an upload.</p></div></article><article><Layers3 size={23}/><div><h3>All the reading essentials.</h3><p>Zoom, rotate, fit to page, switch layouts and download the original. Customize the theme, accent and control labels.</p></div></article></div></section>
+  <section class="closing section-shell"><div><h2>One component.<br />Your next feature.</h2><p>Start with a PDF. Make the rest your own.</p></div><a class="button" href="/docs/">Start building <ArrowUpRight size={18}/></a></section>
+</Layout>

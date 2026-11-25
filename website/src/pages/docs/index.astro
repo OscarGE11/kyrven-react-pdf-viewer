@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Code } from 'astro:components';
+const basic = `import { PdfViewer } from '@kyrven/react-pdf-viewer';
+
+export default function Reader() {
+  return <PdfViewer src="/document.pdf" options={{ height: '75vh' }} />;
+}`;
+const custom = `<PdfViewer
+  src="/document.pdf"
+  options={{
+    height: 640,
+    layout: 'continuous',
+    initialZoom: 'fit-page',
+    theme: 'dark',
+    rememberTheme: false,
+    accentColor: '#2CFF05',
+    toolbar: ['page', 'zoom', 'fit', 'rotate', 'settings', 'download'],
+    downloadName: 'my-document.pdf',
+  }}
+  onLoad={pageCount => console.log('Pages:', pageCount)}
+  onPageChange={page => console.log('Current page:', page)}
+  onError={error => console.error(error)}
+/>`;
+const local = `import { useState } from 'react';
+import { PdfViewer } from '@kyrven/react-pdf-viewer';
+
+export default function LocalReader() {
+  const [file, setFile] = useState<File | null>(null);
+  return (
+    <>
+      <label htmlFor="pdf">Choose a PDF</label>
+      <input id="pdf" type="file" accept="application/pdf"
+        onChange={event => setFile(event.target.files?.[0] ?? null)} />
+      {file && <PdfViewer src={file} options={{ height: 640 }} />}
+    </>
+  );
+}`;
+const english = `const englishLabels = {
+  viewer: 'PDF viewer', viewport: 'PDF pages',
+  documentViewer: 'Document viewer', documentViewport: 'Document content',
+  page: 'Page', previousPage: 'Previous page', nextPage: 'Next page',
+  pageImage: (page: number) => 'Page ' + page, image: 'Image',
+  zoom: 'Zoom', zoomOut: 'Zoom out', zoomIn: 'Zoom in',
+  fitWidth: 'Fit width', fitPage: 'Fit page', rotate: 'Rotation',
+  rotateLeft: 'Rotate left', rotateRight: 'Rotate right',
+  downloadPdf: 'Download PDF', downloadImage: 'Download image',
+  openingPdf: 'Opening PDF…', openingDocument: 'Opening document…',
+  settings: 'Options', layout: 'Layout', continuous: 'Continuous scroll',
+  single: 'Single page', appearance: 'Appearance',
+  light: 'Light', dark: 'Dark', system: 'System',
+  error: (_error: Error) => 'Unable to open this document.',
+};
+
+<PdfViewer src="/document.pdf" labels={englishLabels} />`;
+const options = [
+ ['height', 'CSS length or number', 'Viewer viewport height, for example 640 or "75vh".'],
+ ['layout', '"continuous" | "single"', 'Initial layout. Defaults to continuous.'],
+ ['initialZoom', 'number | "fit-width" | "fit-page"', 'A factor from 0.25 to 3, or an adaptive fit mode.'],
+ ['initialRotation', '0 | 90 | 180 | 270', 'Initial clockwise rotation.'],
+ ['theme', '"light" | "dark" | "system" | "custom"', 'Light by default. A stored reader preference can take precedence.'],
+ ['rememberTheme', 'boolean', 'Defaults to true. Set false to enforce the application theme.'],
+ ['accentColor', 'hex string', 'Three- or six-digit accent color for the custom theme.'],
+ ['toolbar', 'array of control names', 'page, zoom, fit, rotate, settings and download.'],
+ ['downloadName', 'string', 'Filename for saving the original document.'],
+ ['maxCachedPages', 'number (1–6)', 'Maximum cached page canvases.'],
+ ['maxFileBytes', 'number', 'Lower the default 64 MiB document limit.'],
+ ['maxPages', 'number', 'Lower the default 2,000-page limit.'],
+];
+---
+<Layout title="Documentation — Kyrven PDF" description="Install Kyrven PDF in React, configure the viewer, open local documents and deploy the Rust WebAssembly engine.">
+<div class="docs-layout">
+  <aside class="docs-sidebar" aria-label="Documentation navigation"><p>Build with Kyrven</p><a href="#quick-start">Quick start</a><a href="#configuration">Configuration</a><a href="#local-files">Local files</a><a href="#labels">Localization</a><a href="#images">Images & PDFs</a><a href="#frameworks">Astro & Next.js</a><a href="#assets">Engine assets</a><a href="#reference">API reference</a><a href="#requirements">Limits & requirements</a><a class="sidebar-source" href="https://github.com/OscarGE11/kyrven-react-pdf-viewer">View source on GitHub ↗</a></aside>
+  <article class="docs-content"><h1>A reader that fits<br />your React app.</h1><p class="docs-lead">Install the component, pass it a document, and let the Rust engine take care of the rendering.</p>
+  <section id="quick-start"><h2>Quick start</h2><p>Use React 18.2 or 19 and Node.js 22.13 or later. Install the package:</p><Code code="npm i @kyrven/react-pdf-viewer" lang="bash" theme="github-dark"/><p>Put a PDF at <code>public/document.pdf</code> and render it in a component:</p><Code code={basic} lang="tsx" theme="github-dark"/><p>The main entry point lets compatible bundlers emit the worker and WebAssembly assets automatically. For explicit asset control, use the <a href="#assets">static entry point</a>.</p></section>
+  <section id="configuration"><h2>Make it yours</h2><p>Pass appearance, layout and controls through <code>options</code>. Callbacks let your app respond when a document opens or the page changes.</p><Code code={custom} lang="tsx" theme="github-dark"/><div class="callout"><p>Set <code>rememberTheme: false</code> to use your application's theme consistently. Otherwise, the reader can restore a previously saved preference.</p></div></section>
+  <section id="local-files"><h2>Open a local PDF</h2><p>The <code>src</code> prop accepts a URL string, URL object, File, Blob or Uint8Array. A local File is processed in the browser.</p><Code code={local} lang="tsx" theme="github-dark"/><p>For remote URLs, the PDF server must allow CORS. Changing the source or unmounting the viewer cancels an active download.</p></section>
+  <section id="labels"><h2>Speak your users' language</h2><p>The package defaults to Spanish. Pass partial <code>labels</code> overrides for button text, accessibility labels and errors. Here is a complete English set:</p><Code code={english} lang="tsx" theme="github-dark"/><p>The original error is still passed to <code>onError</code>. In Next.js, define label formatter functions inside a Client Component.</p></section>
+  <section id="images"><h2>More than PDFs</h2><p>Use <code>DocumentViewer</code> to display PDFs, JPEG, PNG, WebP and GIF with the same controls. It detects the format from the file header or MIME type.</p><Code code={`import { DocumentViewer } from '@kyrven/react-pdf-viewer';\n\n<DocumentViewer\n  src="/photo.jpg"\n  options={{ initialZoom: 'fit-page', height: 640 }}\n/>`} lang="tsx" theme="github-dark"/><p>Images support EXIF orientation. Animated GIFs display a still frame; downloading preserves the original file.</p></section>
+  <section id="frameworks"><h2>Use your framework</h2><h3>Astro</h3><p>Install the React integration with <code>npx astro add react</code>. Place your reader in a React component and load it as a browser-only island:</p><Code code={`---\nimport Reader from '../components/Reader';\n---\n<Reader client:only="react" />`} lang="astro" theme="github-dark"/><p>This website uses the static entry point described below, so the worker and WASM are served directly from <code>/hayro</code>.</p><h3>Next.js App Router</h3><p>Add <code>'use client'</code> at the top of the file that renders the viewer.</p><Code code={`'use client';\nimport { PdfViewer } from '@kyrven/react-pdf-viewer';\n\nexport default function Reader() {\n  return <PdfViewer src="/document.pdf" options={{ height: '75vh' }} />;\n}`} lang="tsx" theme="github-dark"/><h3>Vite development</h3><p>Exclude the viewer from Vite 7 dependency pre-bundling so the engine URLs resolve relative to the installed package.</p><Code code={`// vite.config.ts\nimport { defineConfig } from 'vite';\nimport react from '@vitejs/plugin-react';\n\nexport default defineConfig({\n  plugins: [react()],\n  optimizeDeps: {\n    exclude: ['@kyrven/react-pdf-viewer'],\n    include: ['react/jsx-runtime'],\n  },\n});`} lang="ts" theme="github-dark"/></section>
+  <section id="assets"><h2>Host the engine assets</h2><p>For explicit control over asset URLs, copy the engine into your public directory during deployment:</p><Code code="npx hayro-pdf-assets public/hayro" lang="bash" theme="github-dark"/><Code code={`import { PdfViewer } from '@kyrven/react-pdf-viewer/static';\n\n<PdfViewer\n  src="/document.pdf"\n  assetsUrl="/hayro"\n  options={{ height: 640 }}\n/>`} lang="tsx" theme="github-dark"/><p>Run the copy command again after package upgrades. Serve the WASM from the application origin with <code>application/wasm</code> as its content type. Adjust <code>assetsUrl</code> if your application is deployed under a subpath.</p></section>
+  <section id="reference"><h2>API reference</h2><p><code>PdfViewer</code> and <code>DocumentViewer</code> accept <code>src</code>, <code>options</code>, <code>labels</code>, <code>assetsUrl</code>, <code>onLoad(pageCount)</code>, <code>onPageChange(page)</code> and <code>onError(error)</code>.</p><h3>Viewer options</h3><div class="table-scroll"><table><thead><tr><th>Option</th><th>Type</th><th>Behavior</th></tr></thead><tbody>{options.map(([name,type,description]) => <tr><td><code>{name}</code></td><td>{type}</td><td>{description}</td></tr>)}</tbody></table></div></section>
+  <section id="requirements"><h2>Know the boundaries</h2><ul><li>Requires module workers, WebAssembly SIMD and Canvas 2D in the browser.</li><li>Pages are rasterized. Text selection, search and interactive PDF forms are not currently supported.</li><li>The default document limits are 64 MiB and 2,000 pages.</li><li>Downloads have a 60-second deadline and enforce the byte limit while reading.</li><li>The download control saves the original document bytes.</li></ul><p>Found something unexpected? <a href="https://github.com/OscarGE11/kyrven-react-pdf-viewer/issues">Open an issue on GitHub</a> with the steps to reproduce it.</p></section>
+  </article>
+</div>
+</Layout>

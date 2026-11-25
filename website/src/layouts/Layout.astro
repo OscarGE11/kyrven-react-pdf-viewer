@@ -1,0 +1,32 @@
+---
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import '@fontsource-variable/manrope';
+import '@fontsource-variable/space-grotesk';
+import { Github, ArrowUpRight } from 'lucide-react';
+const { title = 'Kyrven — PDFs, at home in React.', description = 'A React PDF viewer powered by Rust and WebAssembly. Try it in your browser and make it yours.' } = Astro.props;
+const docs = Astro.url.pathname.startsWith('/docs');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" /><meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} /><meta name="theme-color" content="#090b0a" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2" sizes="16x16 32x32 48x48 64x64 128x128 256x256" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a href="/" class="brand" aria-label="Kyrven home"><Logo />kyrven<span class="brand-tag">/ pdf</span></a>
+      <nav aria-label="Main navigation">
+        <a href="/docs/" aria-current={docs ? 'page' : undefined}>Docs</a>
+        <a class="github-link" href="https://github.com/OscarGE11/kyrven-react-pdf-viewer" aria-label="Kyrven on GitHub" target="_blank" rel="noopener noreferrer"><Github size={20} /></a>
+        <a class="button button-small" href="/#install">Install <ArrowUpRight size={16} /></a>
+      </nav>
+    </header>
+    <main id="main"><slot /></main>
+    <footer class="site-footer"><a class="brand" href="/"><Logo />kyrven<span class="brand-tag">/ pdf</span></a><p>Built with Rust. Made for React.</p><div><a href="/docs/">Documentation</a><a href="https://github.com/OscarGE11/kyrven-react-pdf-viewer/blob/main/LICENSE">MIT license</a><a href="https://github.com/OscarGE11/kyrven-react-pdf-viewer">GitHub</a></div></footer>
+  </body>
+</html>

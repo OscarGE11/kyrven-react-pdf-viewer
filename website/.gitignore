@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.astro/
+public/hayro/
+test-results/
+playwright-report/
+sample-check.png
